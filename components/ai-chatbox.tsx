@@ -27,7 +27,7 @@ import { apiClient } from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  projectId: string;
+  projectId?: string;
 }
 
 const messageSchema = z.object({
@@ -65,16 +65,15 @@ export const AIChatBot = ({ projectId }: Props) => {
 
       // const url = res?.[0]?.ufsUrl;
 
-      // if (!projectId) {
-      //   const res = await apiClient.projects.post();
-      //   if (res) {
-      //     // router.push(`/projects/${res.data.id}`);
-      //   }
-      // }
+      if (!projectId) {
+        const res = await apiClient.projects.post({ message });
+        if (res.data?.id) {
+          router.push(`/projects/${res.data.id}`);
+          return;
+        }
+      }
 
-      await apiClient.messages.post({message: cleanMessage});
-
-      
+      await apiClient.messages.post({ message: cleanMessage, projectId: projectId as string });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
     } finally {

@@ -13,6 +13,8 @@ import { getSandbox, toProjectPath } from "@/lib/sandbox";
 import { z } from "zod";
 import { PROMPT } from "./prompt";
 import { channel, topic } from "@inngest/realtime";
+import { routeModule } from "next/dist/build/templates/pages";
+import { db } from "@/lib/db";
 
 interface CodeAgentState {
   summary: string;
@@ -190,6 +192,39 @@ export const codeAgentFunction = inngest.createFunction(
 
       return `http://${host}`;
     });
+
+    await step.run("save-to-db", async () => {
+      const hasError = Object.keys(result.state.data.files || {}).length === 0;
+
+      if (hasError) {
+        return await db.message.create({
+          data: {
+            content: "Something went wrong, please try again.",
+            role: "ASSISTANT",
+            type: "ERROR",
+            projectId: event.data.projectId.trim(),
+          },
+        });
+      }
+
+      return await db.message.create({
+        data: {
+          content: result.state.data.summary,
+          role: "ASSISTANT",
+          type: "RESULT",
+          projectId: event.data.projectId.trim(),
+          codeFragment: {
+            create: {
+              sandboxUrl,
+              sandboxId,
+              files: result.state.data.files,
+              title: "Code Fragments",
+            },
+          },
+        },
+      });
+    });
+
     return {
       sandboxUrl,
       title: "Code Fragments",

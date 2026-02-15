@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { messages } from "../elysia/messages";
 import { projects } from "../elysia/projects";
 
-const app = new Elysia().use([messages,projects]);
+const app = new Elysia().use(messages).use(projects);
 
 const handler = async (
   req: Request,
@@ -10,7 +10,8 @@ const handler = async (
 ) => {
   const resolvedParams = await params;
   const path = "/" + (resolvedParams.slugs?.join("/") ?? "");
-  const url = new URL(path, "http://localhost");
+  const url = new URL(req.url);
+  url.pathname = path;
   return app.fetch(new Request(url, req));
 };
 
