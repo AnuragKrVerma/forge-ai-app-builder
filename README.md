@@ -16,15 +16,6 @@ A **Bolt/Lovable.dev clone** that allows you to chat with an AI coding agent to 
 - 🏗️ E2B sandbox environment for code execution
 - 📊 Project and message management
 
-### 🚧 In Progress / Pending
-
-- 🌐 Live preview of generated projects
-- 📝 Code editor with Monaco
-- 🌲 File explorer/tree view
-- 🔍 Code highlighting and syntax support
-- 💾 Save and export generated projects
-- 🎨 UI polish and responsive design improvements
-
 ## 🛠️ Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org) (App Router)
